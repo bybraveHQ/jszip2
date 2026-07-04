@@ -1,0 +1,74 @@
+{
+  "name": "@bybrave/jszip2",
+  "version": "4.0.0",
+  "description": "Maintained fork of JSZip — create, read and edit .zip files with JavaScript. Modern runtime: native Promises, pako 2, ESM, no setimmediate/lie/readable-stream.",
+  "author": "bybrave (https://github.com/bybraveHQ)",
+  "contributors": [
+    "Stuart Knightley (author of the original JSZip)",
+    "David Duponchel",
+    "Franz Buchinger",
+    "António Afonso",
+    "yiminghe"
+  ],
+  "main": "./lib/index.js",
+  "types": "./index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./index.d.ts",
+      "import": "./index.mjs",
+      "require": "./lib/index.js"
+    },
+    "./package.json": "./package.json",
+    "./dist/*": "./dist/*"
+  },
+  "browser": {
+    "stream": "./lib/stream-browser-stub.js"
+  },
+  "files": [
+    "lib",
+    "dist",
+    "index.mjs",
+    "index.d.ts"
+  ],
+  "scripts": {
+    "build": "esbuild lib/index.js --bundle --format=iife --global-name=JSZip --alias:stream=./lib/stream-browser-stub.js --outfile=dist/jszip.js && esbuild lib/index.js --bundle --minify --format=iife --global-name=JSZip --alias:stream=./lib/stream-browser-stub.js --outfile=dist/jszip.min.js",
+    "test": "npm run build && npm run test-node && npm run test-dist && npm run test-types",
+    "test-node": "qunit --require ./test/helpers/test-utils.js --require ./test/helpers/node-test-utils.js test/asserts/",
+    "test-dist": "node test/dist-smoke.js",
+    "test-types": "tsc",
+    "prepublishOnly": "npm test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bybraveHQ/jszip2.git"
+  },
+  "bugs": {
+    "url": "https://github.com/bybraveHQ/jszip2/issues"
+  },
+  "homepage": "https://github.com/bybraveHQ/jszip2#readme",
+  "keywords": [
+    "zip",
+    "unzip",
+    "archive",
+    "deflate",
+    "inflate",
+    "compression",
+    "jszip",
+    "esm",
+    "typescript"
+  ],
+  "license": "(MIT OR GPL-3.0-or-later)",
+  "funding": "https://ko-fi.com/bybrave",
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "pako": "^2.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.0",
+    "esbuild": "^0.25.0",
+    "qunit": "^2.21.0",
+    "typescript": "^5.5.0"
+  }
+}
