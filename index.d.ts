@@ -59,6 +59,9 @@ interface OutputByType {
 
 type InputFileFormat = InputByType[keyof InputByType] | Promise<InputByType[keyof InputByType]>;
 
+/** Input formats readable synchronously (no Blob, stream or Promise). */
+type SyncInputFileFormat = InputByType[Exclude<keyof InputByType, 'blob' | 'stream'>];
+
 declare namespace JSZip {
     type InputType = keyof InputByType;
 
@@ -94,6 +97,14 @@ declare namespace JSZip {
          * @return Promise the promise of the result.
          */
         async<T extends OutputType>(type: T, onUpdate?: OnUpdateCallback): Promise<OutputByType[T]>;
+        /**
+         * Prepare the content in the asked type, synchronously. Only works when the file comes
+         * from a synchronous source (a string, a TypedArray, a zip file loaded from one...),
+         * throws otherwise.
+         * @param type the type of the result.
+         * @return the content.
+         */
+        sync<T extends OutputType>(type: T): OutputByType[T];
         nodeStream(type?: 'nodebuffer', onUpdate?: OnUpdateCallback): NodeJS.ReadableStream;
     }
 
@@ -285,6 +296,15 @@ interface JSZip {
     generateAsync<T extends JSZip.OutputType>(options?: JSZip.JSZipGeneratorOptions<T>, onUpdate?: JSZip.OnUpdateCallback): Promise<OutputByType[T]>;
 
     /**
+     * Generates a new archive synchronously. Only works when every file comes from a
+     * synchronous source (a string, a TypedArray, a zip file loaded from one...), throws otherwise.
+     *
+     * @param options Optional options for the generator
+     * @return The serialized archive
+     */
+    generateSync<T extends JSZip.OutputType>(options?: JSZip.JSZipGeneratorOptions<T>): OutputByType[T];
+
+    /**
      * Generates a new archive asynchronously
      *
      * @param options Optional options for the generator
@@ -309,6 +329,16 @@ interface JSZip {
      * @return Returns promise
      */
     loadAsync(data: InputFileFormat, options?: JSZip.JSZipLoadOptions): Promise<JSZip>;
+
+    /**
+     * Deserialize zip file synchronously. Only accepts data available synchronously
+     * (no Blob, stream or Promise).
+     *
+     * @param data Serialized zip file
+     * @param options Options for deserializing
+     * @return Returns the populated JSZip instance
+     */
+    loadSync(data: SyncInputFileFormat, options?: JSZip.JSZipLoadOptions): JSZip;
 
     /**
      * Create JSZip instance

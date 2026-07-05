@@ -27,6 +27,29 @@ const archive = await JSZip.loadAsync(data);
 const text = await archive.file("hello.txt").async("string");
 ```
 
+## Sync API (new in 4.1)
+
+The most-requested feature of the original ([#281](https://github.com/Stuk/jszip/issues/281), open since 2016): zip and unzip without promises — in CLI scripts, Web Workers, getters, anywhere async doesn't fit.
+
+```js
+const zip = new JSZip();
+zip.file("hello.txt", "Hello World\n");
+const buffer = zip.generateSync({ type: "nodebuffer", compression: "DEFLATE" });
+
+const archive = JSZip.loadSync(buffer);
+const text = archive.file("hello.txt").sync("string");
+```
+
+Every `async` entry point has a sync mirror:
+
+| Async | Sync |
+|---|---|
+| `zip.generateAsync(options)` | `zip.generateSync(options)` |
+| `JSZip.loadAsync(data, options)` / `zip.loadAsync(...)` | `JSZip.loadSync(data, options)` / `zip.loadSync(...)` |
+| `file.async(type)` | `file.sync(type)` |
+
+Same options, same output types (including `blob` and `base64`), byte-identical results. The one rule: the data must actually be available synchronously. A file added as a `Blob`, a `Promise` or a Node.js stream can't be read without awaiting it, so the sync methods throw a descriptive error naming the file — everything else, including zips loaded with `loadAsync`, works. The async API is unchanged and still preferred for big archives on the main thread: sync calls block until the archive is done.
+
 ## What's different from jszip 3.10.1
 
 | Change | Original issue |
@@ -39,6 +62,7 @@ const text = await archive.file("hello.txt").async("string");
 | `Blob`/`File` input now works in Node.js (read via `blob.arrayBuffer()` instead of the browser-only `FileReader`) | — |
 | Bundlers consume the real source, not a pre-built UMD blob (the original silently substituted `dist/jszip.min.js` via the `browser` field) | — |
 | Build: esbuild instead of grunt + browserify; CI on Node 18/20/22 | — |
+| **4.1**: synchronous API — `generateSync`, `loadSync`, `file.sync(type)` | [#281](https://github.com/Stuk/jszip/issues/281) |
 
 Dependency count: 4 → 1 (`pako`).
 
@@ -53,7 +77,7 @@ Dependency count: 4 → 1 (`pako`).
 
 Planned for upcoming minor releases (tracked in [issues](https://github.com/bybraveHQ/jszip2/issues)):
 
-- **4.1** — synchronous API (`generateSync` / `loadSync`) — [upstream #281](https://github.com/Stuk/jszip/issues/281)
+- ~~**4.1** — synchronous API (`generateSync` / `loadSync`)~~ — shipped, see [Sync API](#sync-api-new-in-41)
 - **4.2** — Web Streams support (`ReadableStream` in, `ReadableStream` out) — [upstream #345](https://github.com/Stuk/jszip/issues/345), [#830](https://github.com/Stuk/jszip/issues/830)
 - **4.3** — ZIP64: archives and files over 4GB — [upstream #580](https://github.com/Stuk/jszip/issues/580), [#739](https://github.com/Stuk/jszip/issues/739)
 
