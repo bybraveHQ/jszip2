@@ -181,6 +181,13 @@ declare namespace JSZip {
         streamFiles?: boolean;
         /** DOS (default) or UNIX */
         platform?: 'DOS' | 'UNIX';
+        /**
+         * Force the ZIP64 format for every entry. ZIP64 kicks in automatically when a size,
+         * an offset or the entries count overflows 32/16 bits — the only case requiring this
+         * flag is `streamFiles: true` with a file over 4 GiB, whose local header is written
+         * before its size is known.
+         */
+        zip64?: boolean;
     }
 
     interface JSZipLoadOptions {

@@ -27,6 +27,17 @@ const archive = await JSZip.loadAsync(data);
 const text = await archive.file("hello.txt").async("string");
 ```
 
+## ZIP64 (new in 4.3)
+
+Archives and files over 4 GB, and over 65 535 entries ([#580](https://github.com/Stuk/jszip/issues/580), [#739](https://github.com/Stuk/jszip/issues/739) upstream). No configuration needed — ZIP64 kicks in automatically when a size, an offset or the entries count overflows the classic format:
+
+```js
+zip.file("huge.bin", hugeStream);
+const out = zip.generateNodeStream(); // > 4 GB? ZIP64 structures appear by themselves
+```
+
+The single case needing a flag: `streamFiles: true` with files over 4 GB (sizes are unknown when each entry starts, so the format can't be decided on the fly) — pass `zip64: true`, a descriptive error will remind you otherwise. Reading ZIP64 always worked, but sizes beyond 4 GB used to be truncated by 32-bit arithmetic — now exact up to 2^53 − 1 bytes.
+
 ## Web Streams (new in 4.2)
 
 WHATWG `ReadableStream` in and out ([#345](https://github.com/Stuk/jszip/issues/345), [#830](https://github.com/Stuk/jszip/issues/830) upstream) — works in browsers, Web Workers and Node.js ≥ 18:
@@ -87,6 +98,7 @@ Same options, same output types (including `blob` and `base64`), byte-identical 
 | Build: esbuild instead of grunt + browserify; CI on Node 18/20/22 | — |
 | **4.1**: synchronous API — `generateSync`, `loadSync`, `file.sync(type)` | [#281](https://github.com/Stuk/jszip/issues/281) |
 | **4.2**: Web Streams — `ReadableStream` in (`file`, `loadAsync`) and out (`generateWebStream`, `file.webStream`) | [#345](https://github.com/Stuk/jszip/issues/345), [#830](https://github.com/Stuk/jszip/issues/830) |
+| **4.3**: ZIP64 — writing archives/files over 4 GB and over 65 535 entries (auto), exact 64-bit reads | [#580](https://github.com/Stuk/jszip/issues/580), [#739](https://github.com/Stuk/jszip/issues/739) |
 
 Dependency count: 4 → 1 (`pako`).
 
