@@ -1,6 +1,6 @@
 {
   "name": "@bybrave/jszip2",
-  "version": "4.0.0",
+  "version": "4.1.0",
   "description": "Maintained fork of JSZip — create, read and edit .zip files with JavaScript. Modern runtime: native Promises, pako 2, ESM, no setimmediate/lie/readable-stream.",
   "author": "bybrave (https://github.com/bybraveHQ)",
   "contributors": [
