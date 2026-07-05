@@ -102,6 +102,19 @@ Same options, same output types (including `blob` and `base64`), byte-identical 
 
 Dependency count: 4 → 1 (`pako`).
 
+## Migrating from jszip
+
+```diff
+- const JSZip = require('jszip');
++ const JSZip = require('@bybrave/jszip2');
+```
+
+Drop-in: the whole 3.x API works unchanged, generated zips are byte-compatible. What to know:
+
+- Node.js ≥ 18 required; IE is not supported (it needed the removed polyfills)
+- Methods removed back in jszip 3.0 (`generate()`, `load()`, `asText()`…) still throw the same guidance errors
+- New capabilities (sync API, web streams, ZIP64) are additive — existing async code keeps working as is
+
 ## Compatibility
 
 - **API is unchanged** — this is a drop-in replacement for `jszip`. The full API documentation of the original applies: [stuk.github.io/jszip](https://stuk.github.io/jszip/) (a copy lives in [`documentation/`](./documentation)).
