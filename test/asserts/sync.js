@@ -225,7 +225,7 @@ QUnit.module("sync", function () {
             zip.file("stream.txt", fs.createReadStream(__filename));
             assert.throws(function () {
                 zip.generateSync({type: "uint8array"});
-            }, /The file 'stream.txt' comes from a nodejs stream/, "generateSync throws with the file name");
+            }, /The file 'stream.txt' comes from a stream/, "generateSync throws with the file name");
         });
 
         QUnit.test("loadSync refuses a nodejs stream", function (assert) {

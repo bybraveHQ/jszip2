@@ -11,6 +11,8 @@ interface JSZipSupport {
     uint8array: boolean;
     blob: boolean;
     nodebuffer: boolean;
+    nodestream: boolean;
+    webstream: boolean;
 }
 
 type Compression = 'STORE' | 'DEFLATE';
@@ -33,6 +35,7 @@ interface InputByType {
     arraybuffer: ArrayBuffer;
     blob: Blob;
     stream: NodeJS.ReadableStream;
+    webstream: ReadableStream;
 }
 
 interface OutputByType {
@@ -60,7 +63,7 @@ interface OutputByType {
 type InputFileFormat = InputByType[keyof InputByType] | Promise<InputByType[keyof InputByType]>;
 
 /** Input formats readable synchronously (no Blob, stream or Promise). */
-type SyncInputFileFormat = InputByType[Exclude<keyof InputByType, 'blob' | 'stream'>];
+type SyncInputFileFormat = InputByType[Exclude<keyof InputByType, 'blob' | 'stream' | 'webstream'>];
 
 declare namespace JSZip {
     type InputType = keyof InputByType;
@@ -106,6 +109,13 @@ declare namespace JSZip {
          */
         sync<T extends OutputType>(type: T): OutputByType[T];
         nodeStream(type?: 'nodebuffer', onUpdate?: OnUpdateCallback): NodeJS.ReadableStream;
+        /**
+         * Prepare the content as a web ReadableStream (WHATWG Streams).
+         * @param type the type of each chunk ('uint8array' or 'nodebuffer').
+         * @param onUpdate a function to call on each internal update.
+         * @return the stream.
+         */
+        webStream(type?: 'uint8array' | 'nodebuffer', onUpdate?: OnUpdateCallback): ReadableStream<Uint8Array>;
     }
 
     interface JSZipFileOptions {
@@ -312,6 +322,15 @@ interface JSZip {
      * @return A Node.js `ReadableStream`
      */
     generateNodeStream(options?: JSZip.JSZipGeneratorOptions<'nodebuffer'>, onUpdate?: JSZip.OnUpdateCallback): NodeJS.ReadableStream;
+
+    /**
+     * Generates a new archive as a web ReadableStream (WHATWG Streams)
+     *
+     * @param options Optional options for the generator
+     * @param onUpdate The optional function called on each internal update with the metadata.
+     * @return A web `ReadableStream` of the zip content
+     */
+    generateWebStream(options?: JSZip.JSZipGeneratorOptions<'uint8array' | 'nodebuffer'>, onUpdate?: JSZip.OnUpdateCallback): ReadableStream<Uint8Array>;
 
     /**
      * Generates the complete zip file with the internal stream implementation
