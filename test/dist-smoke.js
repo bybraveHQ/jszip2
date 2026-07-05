@@ -36,6 +36,11 @@ async function testBundle(file) {
         [4, 5, 6],
     );
 
+    const syncZip = new JSZip();
+    syncZip.file("sync.txt", "sync in the bundle");
+    const reloaded3 = JSZip.loadSync(syncZip.generateSync({ type: "uint8array", compression: "DEFLATE" }));
+    assert.strictEqual(reloaded3.file("sync.txt").sync("string"), "sync in the bundle", `${file}: sync API round trip`);
+
     console.log(`${file} OK`);
 }
 
