@@ -97,14 +97,6 @@ Dependency count: 4 → 1 (`pako`).
 - `JSZip.external.Promise` is still overridable if you need a custom Promise implementation.
 - Browser `<script>` builds: `dist/jszip.js` and `dist/jszip.min.js` (global `JSZip`), shipped in the npm package.
 
-## Roadmap
-
-Planned for upcoming minor releases (tracked in [issues](https://github.com/bybraveHQ/jszip2/issues)):
-
-- ~~**4.1** — synchronous API (`generateSync` / `loadSync`)~~ — shipped, see [Sync API](#sync-api-new-in-41)
-- ~~**4.2** — Web Streams support~~ — shipped, see [Web Streams](#web-streams-new-in-42)
-- **4.3** — ZIP64: archives and files over 4GB — [upstream #580](https://github.com/Stuk/jszip/issues/580), [#739](https://github.com/Stuk/jszip/issues/739)
-
 ## Support
 
 If this package saves you time, you can support maintenance:
