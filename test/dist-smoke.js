@@ -41,6 +41,13 @@ async function testBundle(file) {
     const reloaded3 = JSZip.loadSync(syncZip.generateSync({ type: "uint8array", compression: "DEFLATE" }));
     assert.strictEqual(reloaded3.file("sync.txt").sync("string"), "sync in the bundle", `${file}: sync API round trip`);
 
+    assert.strictEqual(JSZip.support.webstream, true, `${file}: web streams supported`);
+    const wsZip = new JSZip();
+    wsZip.file("ws.txt", new Response("web streams in the bundle").body);
+    const wsOut = await new Response(wsZip.generateWebStream({ compression: "DEFLATE" })).arrayBuffer();
+    const reloaded4 = await JSZip.loadAsync(wsOut);
+    assert.strictEqual(await reloaded4.file("ws.txt").async("string"), "web streams in the bundle", `${file}: web stream round trip`);
+
     console.log(`${file} OK`);
 }
 

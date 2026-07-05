@@ -27,6 +27,29 @@ const archive = await JSZip.loadAsync(data);
 const text = await archive.file("hello.txt").async("string");
 ```
 
+## Web Streams (new in 4.2)
+
+WHATWG `ReadableStream` in and out ([#345](https://github.com/Stuk/jszip/issues/345), [#830](https://github.com/Stuk/jszip/issues/830) upstream) — works in browsers, Web Workers and Node.js ≥ 18:
+
+```js
+// in: zip a fetch response without buffering it first
+const response = await fetch(url);
+zip.file("data.json", response.body);
+
+// in: load a zip straight from fetch
+const archive = await JSZip.loadAsync((await fetch(zipUrl)).body);
+
+// out: stream the generated zip — backpressure included
+return new Response(zip.generateWebStream({ compression: "DEFLATE" }), {
+  headers: { "Content-Type": "application/zip" }
+});
+
+// out: stream one file's content
+await archive.file("video.mp4").webStream().pipeTo(destination);
+```
+
+`generateWebStream` / `webStream` mirror `generateNodeStream` / `nodeStream`; feature detection via `JSZip.support.webstream`.
+
 ## Sync API (new in 4.1)
 
 The most-requested feature of the original ([#281](https://github.com/Stuk/jszip/issues/281), open since 2016): zip and unzip without promises — in CLI scripts, Web Workers, getters, anywhere async doesn't fit.
@@ -63,6 +86,7 @@ Same options, same output types (including `blob` and `base64`), byte-identical 
 | Bundlers consume the real source, not a pre-built UMD blob (the original silently substituted `dist/jszip.min.js` via the `browser` field) | — |
 | Build: esbuild instead of grunt + browserify; CI on Node 18/20/22 | — |
 | **4.1**: synchronous API — `generateSync`, `loadSync`, `file.sync(type)` | [#281](https://github.com/Stuk/jszip/issues/281) |
+| **4.2**: Web Streams — `ReadableStream` in (`file`, `loadAsync`) and out (`generateWebStream`, `file.webStream`) | [#345](https://github.com/Stuk/jszip/issues/345), [#830](https://github.com/Stuk/jszip/issues/830) |
 
 Dependency count: 4 → 1 (`pako`).
 
@@ -78,7 +102,7 @@ Dependency count: 4 → 1 (`pako`).
 Planned for upcoming minor releases (tracked in [issues](https://github.com/bybraveHQ/jszip2/issues)):
 
 - ~~**4.1** — synchronous API (`generateSync` / `loadSync`)~~ — shipped, see [Sync API](#sync-api-new-in-41)
-- **4.2** — Web Streams support (`ReadableStream` in, `ReadableStream` out) — [upstream #345](https://github.com/Stuk/jszip/issues/345), [#830](https://github.com/Stuk/jszip/issues/830)
+- ~~**4.2** — Web Streams support~~ — shipped, see [Web Streams](#web-streams-new-in-42)
 - **4.3** — ZIP64: archives and files over 4GB — [upstream #580](https://github.com/Stuk/jszip/issues/580), [#739](https://github.com/Stuk/jszip/issues/739)
 
 ## Support
