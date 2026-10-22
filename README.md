@@ -115,6 +115,10 @@ Drop-in: the whole 3.x API works unchanged, generated zips are byte-compatible. 
 - Methods removed back in jszip 3.0 (`generate()`, `load()`, `asText()`…) still throw the same guidance errors
 - New capabilities (sync API, web streams, ZIP64) are additive — existing async code keeps working as is
 
+## Roadmap
+
+- **5.0**: replace `pako` with [`fflate`](https://github.com/101arrowz/fflate) — smaller bundle, faster inflate/deflate, zero remaining dependencies. Tracked in [#1](https://github.com/bybraveHQ/jszip2/issues/1); a PR is welcome. The public API stays the same.
+
 ## Compatibility
 
 - **API is unchanged** — this is a drop-in replacement for `jszip`. The full API documentation of the original applies: [stuk.github.io/jszip](https://stuk.github.io/jszip/) (a copy lives in [`documentation/`](./documentation)).
